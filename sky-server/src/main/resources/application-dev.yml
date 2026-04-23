@@ -6,3 +6,8 @@ sky:
     database: sky_take_out
     username: root
     password: qazwsxedc2002.
+  alioss:
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    access-key-id: your_access_key_id          # <--- 改成假文字
+    access-key-secret: your_access_key_secret  # <--- 改成假文字
+    bucket-name: dkd-itheima666
