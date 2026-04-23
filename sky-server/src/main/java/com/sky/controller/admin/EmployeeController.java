@@ -130,9 +130,9 @@ public class EmployeeController {
         return Result.success(employee);
     }
     /**
-     * 编辑员工信息
-     * @param employeeDTO
-     * @return
+     * 根据iID修改菜品和对应的口味信息
+     * @params DishDTO
+     * return
      */
     @PutMapping("")
     @ApiOperation("编辑员工信息")
