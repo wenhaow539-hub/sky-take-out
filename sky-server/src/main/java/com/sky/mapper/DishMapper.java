@@ -4,8 +4,10 @@ import com.github.pagehelper.Page;
 import com.sky.annotation.AutoFill;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
+import com.sky.entity.SetmealDish;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
+import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -74,4 +76,14 @@ public interface DishMapper {
      * @return
      */
     List<Dish> list(Dish dish);
+
+
+
+    /**
+     * 根据套餐id查询菜品信息
+     * @return
+     */
+    @Select("select * from setmeal_dish WHERE setmeal_id = #{id}")
+    List<SetmealDish> getBySetmealId(Long id);
+
 }

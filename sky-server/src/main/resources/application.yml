@@ -13,8 +13,8 @@ spring:
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
   redis:
-    host: ${sky.redis.host}
-    port: ${sky.redis.port}
+    host: localhost
+    port: 6396
 
 mybatis:
   #mapper配置文件
@@ -45,7 +45,7 @@ sky:
     user-token-name: authentication
   alioss:
     endpoint: ${sky.alioss.endpoint}
-    access-key-secret: ${sky.alioss.secret-key-secret}
+    access-key-secret: ${sky.alioss.access-key-secret}
     bucket-name: ${sky.alioss.bucket-name}
     access-key-id: ${sky.alioss.access-key-id}
   wechat:
