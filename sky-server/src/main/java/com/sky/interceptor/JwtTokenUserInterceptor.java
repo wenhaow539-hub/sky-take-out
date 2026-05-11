@@ -1,5 +1,6 @@
 package com.sky.interceptor;
 
+import com.sky.annotation.Anonymous;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.context.BaseContext;
 import com.sky.properties.JwtProperties;
@@ -33,6 +34,24 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
      * @throws Exception
      */
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        // 1. 如果拦截到的不是 Controller 方法（比如静态资源），直接放行
+        if (!(handler instanceof HandlerMethod)) {
+            return true;
+        }
+
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+
+        // 2. 核心逻辑：判断类或者方法上是否贴了 @Anonymous 注解
+        // 判断类上是否有注解
+        boolean hasAnonymousOnClass = handlerMethod.getBeanType().isAnnotationPresent(Anonymous.class);
+        // 判断方法上是否有注解
+        boolean hasAnonymousOnMethod = handlerMethod.getMethod().isAnnotationPresent(Anonymous.class);
+
+        if (hasAnonymousOnClass || hasAnonymousOnMethod) {
+            // 如果有匿名注解，直接开绿灯放行！
+            return true;
+        }
         System.out.println("当前线程的id："+ Thread.currentThread().getId());
         //判断当前拦截到的是Controller的方法还是其他资源
         if (!(handler instanceof HandlerMethod)) {
