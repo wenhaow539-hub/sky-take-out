@@ -10,6 +10,7 @@ import com.sky.service.OrderService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,8 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private WebSocketServer webSocketServer;
 
 
 
@@ -54,6 +57,7 @@ public class OrderController {
     public Result<String> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         log.info("订单支付：{}", ordersPaymentDTO);
         orderService.paySuccess(ordersPaymentDTO.getOrderNumber());
+
         return  Result.success();
     }
 
@@ -121,5 +125,16 @@ public class OrderController {
         return Result.success();
     }
 
+    /**
+     * 催单
+     * @return
+     */
 
+    @GetMapping("/reminder/{id}")
+    @ApiOperation("催单")
+    public Result reminder(@PathVariable Long id){
+
+        orderService.reminder(id);
+        return Result.success();
+    }
 }

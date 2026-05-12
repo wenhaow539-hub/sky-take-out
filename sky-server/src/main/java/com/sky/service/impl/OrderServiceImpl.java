@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -19,6 +20,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +31,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +51,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private WeChatPayUtil weChatPayUtil;
 
+    @Autowired
+    private WebSocketServer webSocketServer;
 
 
     @Transactional
@@ -238,6 +240,26 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+//        //通过websocket 向客户端浏览器推送信息 type orderId content
+//        Map map = new HashMap();
+//        map.put("type",1);
+//        map.put("orderId",ordersDB.getId());
+//        map.put("content","订单号："+ outTradeNo);
+//
+//        String json = JSONObject.toJSONString(map);
+//        webSocketServer.sendToAllClient(json);
+
+        Map map = new HashMap();
+        map.put("type", 1); // 1表示来单提醒，2表示客户催单
+        map.put("orderId", orders.getId());
+        map.put("content", "订单号：" + outTradeNo);
+
+// 把 Map 转成标准的 JSON 字符串发给前端
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
+
+
     }
 
     /**
@@ -538,6 +560,31 @@ public class OrderServiceImpl implements OrderService {
         orders.setDeliveryTime(LocalDateTime.now());
 
         orderMapper.update(orders);
+    }
+
+
+
+    /**
+     * 催单
+     * @return
+     */
+    @Override
+    public void reminder(Long id) {
+
+        Orders orders = orderMapper.getById(id);
+        if(orders == null ){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Map map = new HashMap();
+        map.put("type", 2); // 1表示来单提醒，2表示客户催单
+        map.put("orderId", orders.getId());
+        map.put("content", "订单号：" + orders.getNumber());
+
+// 把 Map 转成标准的 JSON 字符串发给前端
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
+
     }
 
 }
